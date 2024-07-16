@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 
-#~/ardupilot/Tools/autotest/sim_vehicle.py --vehicle=ArduSub --aircraft="bwsibot" -L RATBeach --out=udp:169.254.66.80:14550
-#ros2 launch mavros apm.launch fcu_url:=udp://127.0.0.1:14550@14555 gcs_url:=udp://:14550@169.254.66.80:14550 tgt_system:=1 tgt_component:=1 system_id:=255 component_id:=240
+#~/ardupilot/Tools/autotest/sim_vehicle.py --vehicle=ArduSub --aircraft="bwsibot" -L RATBeach --out=udp:169.254.77.254:14550
+#ros2 launch mavros apm.launch fcu_url:=udp://127.0.0.1:14550@14555 gcs_url:=udp://:14550@169.254.77.254:14550 tgt_system:=1 tgt_component:=1 system_id:=255 component_id:=240
 
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Vector3
 from sensor_msgs.msg import BatteryState
 from sensor_msgs.msg import Imu
+
+from rclpy.qos import QoSProfile, QoSHistoryPolicy, QoSReliabilityPolicy, QoSDurabilityPolicy
 
 import numpy as np
 
@@ -20,6 +22,12 @@ class ROV_sensors(Node):
             BatteryState,
             "/mavros/battery",
             self.battery_callback,
+            QoSProfile(
+            history=QoSHistoryPolicy.KEEP_LAST,
+            depth=10,
+            reliability=QoSReliabilityPolicy.BEST_EFFORT,
+            durability=QoSDurabilityPolicy.VOLATILE
+        )
         )
         self.battery_data = BatteryState() #Initialize attribute (of type battery status) under the name battery_data
         
@@ -33,6 +41,12 @@ class ROV_sensors(Node):
             Imu,
             "/mavros/imu/data",
             self.imu_callback,
+            QoSProfile(
+            history=QoSHistoryPolicy.KEEP_LAST,
+            depth=10,
+            reliability=QoSReliabilityPolicy.BEST_EFFORT,
+            durability=QoSDurabilityPolicy.VOLATILE
+        )
         )
         self.imu_data = Imu()
         
@@ -44,10 +58,11 @@ class ROV_sensors(Node):
         
     def battery_callback(self, msg):
         self.battery_data = msg
-        self.get_logger().info({self.battery_data})
+        self.get_logger().info(f"battery: {self.battery_data.voltage}")
         
     def imu_callback(self, msg):
         self.imu_data = msg
+        self.get_logger().info(f"IMU: {self.imu_data}")
         
 def main(args=None):
     rclpy.init(args=args)
