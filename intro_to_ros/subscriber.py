@@ -24,18 +24,19 @@ class TutorialSubscriber(Node):
         data.y = msg.y / magnitude
         data.z = msg.z / magnitude
         self.get_logger().info(f"Vector3\n\tx: {data.x}\ty: {data.y}\tz: {data.z}")
-    def main(args=None):
-        rclpy.init(args=args)
-        node = TutorialSubscriber()
+        
+def main(args=None):
+    rclpy.init(args=args)
+    node = TutorialSubscriber()
 
-        try:
-            rclpy.spin(node)
-        except KeyboardInterrupt:
-            print("\nKeyboardInterrupt received, shutting down...")
-        finally:
-            node.destroy_node()
-            if rclpy.ok():
-                rclpy.shutdown()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        print("\nKeyboardInterrupt received, shutting down...")
+    finally:
+        node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
-    if __name__=="__main__":
-        main()
+if __name__=="__main__":
+    main()

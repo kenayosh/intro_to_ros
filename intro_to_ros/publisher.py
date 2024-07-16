@@ -27,19 +27,21 @@ class TutorialPublisher(Node):
         self.publisher.publish(msg)             #publish the message
         self.get_logger().info(f"Vector3\n\tx: {msg.x}\ty: {msg.y}\tz: {msg.z}")
         
-    def main(args=None):
-        rclpy.init(args=args)           # starts the ROS2 Python3 client
-        node = TutorialPublisher()      # creates an instance of the TutorialPublisher class
+def main(args=None):
+    rclpy.init(args=args)           # starts the ROS2 Python3 client
+    node = TutorialPublisher()      # creates an instance of the TutorialPublisher class
 
-        try:
-            rclpy.spin(node)            # keeps node running until there is an exception
-        except KeyboardInterrupt:
-            print("\nKeyboardInterrupt received, shutting down...")
-        finally:
-            node.destroy_node()         # destroys node at the end of the program's lifespan
-            if rclpy.ok():
-                rclpy.shutdown()        # closes the ROS2 Python3 client if it is still active
+    try:
+        rclpy.spin(node)            # keeps node running until there is an exception
+    except KeyboardInterrupt:
+        print("\nKeyboardInterrupt received, shutting down...")
+    finally:
+        node.destroy_node()         # destroys node at the end of the program's lifespan
+        if rclpy.ok():
+            rclpy.shutdown()        # closes the ROS2 Python3 client if it is still active
 
-    if __name__=="__main__":
-        main()
-        
+if __name__=="__main__":
+    main()
+    
+#ros2 launch mavros apm.launch fcu_url:=udp://127.0.0.1:14550@14555 gcs_url:=udp://:14550@169.254.186.35:14550 tgt_system:=1 tgt_component:=1 system_id:=255 component_id:=240
+    
